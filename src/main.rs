@@ -45,11 +45,26 @@ fn main () {
 			println! ("{}", password);
 		},
 
+		"gen-pin" => {
+			let num_chars = match args.len () {
+				1 => 8,
+				2 => args [1].parse ().unwrap (),
+				_ => panic! (),
+			};
+			let mut rng = rand::thread_rng ();
+			let uniform = Uniform::from ('0' as u32 .. '9' as u32);
+			let pin: String = iter::repeat_with (
+				|| char::from_u32 (uniform.sample (& mut rng)).unwrap (),
+			).take (num_chars).collect ();
+			println! ("{}", pin);
+		},
+
 		_ => {
 			eprintln! ("Please invoke via a symlink:");
 			eprintln! ();
-			eprintln! ("  gen-diceware ...  Diceware words");
-			eprintln! ("  gen-password ...  Lowercase ASCII characters");
+			eprintln! ("  gen-diceware [LEN]  Diceware English words, defaults to 6 words");
+			eprintln! ("  gen-password [LEN]  Lowercase ASCII characters, defaults to 20 characters");
+			eprintln! ("  gen-pin [LEN]       ASCII decimal digits, defaults to 8 digits");
 			eprintln! ();
 			process::exit (1);
 		},
