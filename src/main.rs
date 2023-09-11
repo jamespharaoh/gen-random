@@ -8,6 +8,9 @@ use std::path::Path;
 
 mod diceware;
 
+const HEX_DIGITS: [char; 16] =
+	[ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' ];
+
 fn main () {
 
 	let args: Vec <String> = env::args ().collect ();
@@ -29,6 +32,21 @@ fn main () {
 				.copied ().collect ();
 			let password = words.join (" ");
 			println! ("{}", password);
+		},
+
+		"gen-hex" => {
+			let num_digits = match args.len () {
+				1 => 16,
+				2 => args [1].parse ().unwrap (),
+				_ => panic! (),
+			};
+			let mut rng = rand::thread_rng ();
+			let distr = rand::distributions::Slice::new (& HEX_DIGITS).unwrap ();
+			let result: String =
+				iter::repeat_with (|| distr.sample (& mut rng))
+					.take (num_digits)
+					.collect ();
+			println! ("{result}");
 		},
 
 		"gen-password" => {
